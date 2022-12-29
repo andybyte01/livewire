@@ -28,3 +28,4 @@ Route::get('blog/crear', ArticleForm::class)->name('articles.create');
 Route::get('blog/{article}', ArticleShow::class)->name('articles.show');
 
 Route::get('blog/{article}/edit', ArticleForm::class)->name('articles.edit');
+
