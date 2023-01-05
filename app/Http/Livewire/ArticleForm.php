@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -38,10 +39,10 @@ class ArticleForm extends Component
         $this->validateOnly($propertyName);
     }
 
-    public function updatedArticleTitle($title){
+    public function updatedArticleTitle($title)
+    {
 
         $this->article->slug = Str::slug($title);
-
     }
 
 
@@ -49,7 +50,11 @@ class ArticleForm extends Component
     {
 
         $this->validate();
-        $this->article->save();
+
+        Auth::user()->articles()->save($this->article);
+
+        /*  $this->article->user_id = auth()->id(); */
+        /*  $this->article->save(); */
 
         session()->flash('status', __('Article saved.'));
 

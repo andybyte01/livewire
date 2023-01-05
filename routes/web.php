@@ -29,3 +29,4 @@ Route::get('blog/{article}', ArticleShow::class)->name('articles.show');
 
 Route::get('blog/{article}/edit', ArticleForm::class)->name('articles.edit')->middleware('auth');
 
+Route::get('login')->name('login');
