@@ -1,27 +1,50 @@
 <div>
-    <h1>Crear artículo</h1>
-    <form wire:submit.prevent="save">
-        <label>
-            <input wire:model="article.title" type="text" placeholder="Título">
-            @error('article.title')
-                <div>{{ $message }}</div>
-            @enderror
-        </label>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('New Article') }}
+        </h2>
+    </x-slot>
+    <div>
+        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+            <x-jet-form-section submit="save">
+                <x-slot name="title">
+                    {{ __('New article') }}
+                </x-slot>
+                <x-slot name="description">
+                    {{ __('Some description') }}
+                </x-slot>
 
-        <label>
-            <input wire:model="article.slug" type="text" placeholder="URL Amigable">
-            @error('article.slug')
-                <div>{{ $message }}</div>
-            @enderror
-        </label>
+                <x-slot name="form">
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-jet-label for="image" :value="__('Image')" />
+                        <x-jet-input wire:model="image" id="image" class="mt-1 block w-full" type="file" />
+                        <x-jet-input-error for="image" class="mt-2" />
+                    </div>
 
-        <label>
-            <textarea wire:model="article.content" placeholder="Contenido"></textarea>
-            @error('article.content')
-                <div>{{ $message }}</div>
-            @enderror
-        </label>
-
-        <input type="submit" value="Guardar">
-    </form>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-jet-label for="title" :value="__('Title')" />
+                        <x-jet-input wire:model="article.title" id="title" class="mt-1 block w-full" type="text" />
+                        <x-jet-input-error for="article.title" class="mt-2" />
+                    </div>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-jet-label for="slug" :value="__('Slug')" />
+                        <x-jet-input wire:model="article.slug" id="slug" class="mt-1 block w-full"
+                            type="text" />
+                        <x-jet-input-error for="article.slug" class="mt-2" />
+                    </div>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-jet-label for="content" :value="__('Content')" />
+                        <x-html-editor wire:model="article.content" id="content" class="mt-1 block w-full">
+                        </x-html-editor>
+                        <x-jet-input-error for="article.content" class="mt-2" />
+                    </div>
+                    <x-slot name="actions">
+                        <x-jet-button>
+                            {{ __('Save') }}
+                        </x-jet-button>
+                    </x-slot>
+                </x-slot>
+            </x-jet-form-section>
+        </div>
+    </div>
 </div>
