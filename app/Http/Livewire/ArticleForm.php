@@ -3,11 +3,12 @@
 namespace App\Http\Livewire;
 
 use App\Models\Article;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleForm extends Component
 {
@@ -22,7 +23,16 @@ class ArticleForm extends Component
     {
         return [
 
-            'image' => ['image', 'max:2048'],
+            'image' => [
+                Rule::requiredIf(!$this->article->image),
+                Rule::when($this->image, [
+                    'image',
+                    'max:2048'
+                ])
+
+
+
+            ],
             'article.title' => ['required', 'min:4'],
 
             'article.slug' => [
@@ -35,6 +45,14 @@ class ArticleForm extends Component
     }
 
 
+    protected function uploadImage()
+    {
+        if ($oldImage = $this->article->image) {
+            Storage::disk('public')->delete($oldImage);
+        }
+
+        return $this->image->store('/', 'public');
+    }
 
     public function mount(Article $article)
     {
@@ -58,8 +76,10 @@ class ArticleForm extends Component
 
         $this->validate();
 
+        if ($this->image) {
 
-        $this->article->image = $this->image->store('/', 'public');
+            $this->article->image = $this->uploadImage();
+        }
 
         Auth::user()->articles()->save($this->article);
 
