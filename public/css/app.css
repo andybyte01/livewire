@@ -768,6 +768,8 @@ video {
   bottom: 0.5rem;
 }.right-2 {
   right: 0.5rem;
+}.top-0 {
+  top: 0px;
 }.z-0 {
   z-index: 0;
 }.z-50 {
@@ -823,6 +825,8 @@ video {
   margin-left: 1.5rem;
 }.mb-4 {
   margin-bottom: 1rem;
+}.-mt-px {
+  margin-top: -1px;
 }.block {
   display: block;
 }.inline {
@@ -895,6 +899,8 @@ video {
   max-width: 80rem;
 }.max-w-xl {
   max-width: 36rem;
+}.max-w-6xl {
+  max-width: 72rem;
 }.flex-1 {
   flex: 1 1 0%;
 }.shrink-0 {
@@ -1007,6 +1013,8 @@ video {
   border-top-width: 1px;
 }.border-b {
   border-bottom-width: 1px;
+}.border-r {
+  border-right-width: 1px;
 }.border-dashed {
   border-style: dashed;
 }.border-gray-300 {
@@ -1023,6 +1031,9 @@ video {
 }.border-gray-100 {
   --tw-border-opacity: 1;
   border-color: rgb(243 244 246 / var(--tw-border-opacity));
+}.border-gray-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(156 163 175 / var(--tw-border-opacity));
 }.bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -1136,6 +1147,8 @@ video {
   padding-top: 1rem;
 }.pb-1 {
   padding-bottom: 0.25rem;
+}.pt-8 {
+  padding-top: 2rem;
 }.text-left {
   text-align: left;
 }.text-center {
@@ -1180,6 +1193,8 @@ video {
   line-height: 1rem;
 }.tracking-widest {
   letter-spacing: 0.1em;
+}.tracking-wider {
+  letter-spacing: 0.05em;
 }.text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
@@ -1225,6 +1240,12 @@ video {
 }.text-green-500 {
   --tw-text-opacity: 1;
   color: rgb(34 197 94 / var(--tw-text-opacity));
+}.text-gray-200 {
+  --tw-text-opacity: 1;
+  color: rgb(229 231 235 / var(--tw-text-opacity));
+}.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
 }.underline {
   text-decoration-line: underline;
 }.antialiased {
@@ -1423,6 +1444,10 @@ video {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }.disabled\:opacity-25:disabled {
   opacity: 0.25;
+}@media (prefers-color-scheme: dark) {.dark\:bg-gray-900 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  }
 }@media (min-width: 640px) {.sm\:col-span-4 {
     grid-column: span 4 / span 4;
   }.sm\:mx-0 {
@@ -1485,6 +1510,8 @@ video {
     align-items: flex-start;
   }.sm\:items-center {
     align-items: center;
+  }.sm\:justify-start {
+    justify-content: flex-start;
   }.sm\:justify-center {
     justify-content: center;
   }.sm\:justify-between {
