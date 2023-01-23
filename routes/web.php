@@ -27,7 +27,7 @@ Route::get('blog/crear', ArticleForm::class)->name('articles.create')->middlewar
 
 Route::get('blog/{article}', ArticleShow::class)->name('articles.show');
 
-Route::get('blog/{article}/edit', ArticleForm::class)->name('articles.edit')->middleware('auth');
+Route::get('blog/{article:id}/edit', ArticleForm::class)->name('articles.edit')->middleware('auth');
 
 
 Route::middleware([

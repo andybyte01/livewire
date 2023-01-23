@@ -240,6 +240,7 @@ class ArticleFormTest extends TestCase
             ->assertHasErrors(['article.slug' => 'unique'])
             ->assertSeeHtml(__('validation.unique', ['attribute' => 'slug']));
     }
+    
     /** @test */
     public function slug_must_only_contain_letters_numbers_dashes_and_underscores()
     {
@@ -252,6 +253,7 @@ class ArticleFormTest extends TestCase
             ->assertHasErrors(['article.slug' => 'alpha_dash'])
             ->assertSeeHtml(__('validation.alpha_dash', ['attribute' => 'slug']));
     }
+
     /** @test */
     public function unique_rule_should_be_ignored_when_updating_the_same_slug()
     {
@@ -300,6 +302,7 @@ class ArticleFormTest extends TestCase
             ->set('article.title', 'New article')
             ->assertHasNoErrors('article.title');
     }
+
     /** @test */
     public function real_time_validation_works_for_content()
     {
@@ -310,6 +313,7 @@ class ArticleFormTest extends TestCase
             ->set('article.content', 'Article content')
             ->assertHasNoErrors('article.title');
     }
+
     /** @test */
     public function slug_is_generated_automatically()
     {
