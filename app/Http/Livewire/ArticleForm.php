@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Article;
+use App\Models\Category;
 use Livewire\Component;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
@@ -15,8 +16,29 @@ class ArticleForm extends Component
 
     use WithFileUploads;
     public Article $article;
-
     public $image;
+    public $newCategory;
+    public $showCategoryModal = false;
+
+    public function openCategoryForm()
+    {
+        $this->newCategory = new Category;
+        $this->showCategoryModal = true;
+    }
+
+    public function closeCategoryForm()
+    {
+        $this->showCategoryModal = false;
+        $this->newCategory = null;
+    }
+
+
+    public function saveNewCategory()
+    {
+        $this->newCategory->save();
+        $this->article->category_id = $this->newCategory->id;
+        $this->closeCategoryForm();
+    }
 
 
     protected function rules()
@@ -41,6 +63,12 @@ class ArticleForm extends Component
                 Rule::unique('articles', 'slug')->ignore($this->article)
             ],
             'article.content' => ['required'],
+            'article.category_id' => [
+                'required',
+                Rule::exists('categories', 'id')
+            ],
+            'newCategory.name' => [],
+            'newCategory.slug' => [],
         ];
     }
 
@@ -71,6 +99,14 @@ class ArticleForm extends Component
     }
 
 
+    public function updatedNewCategoryName($name)
+    {
+
+        $this->newCategory->slug = Str::slug($name);
+    }
+
+
+
     public function save()
     {
 
@@ -93,6 +129,8 @@ class ArticleForm extends Component
 
     public function render()
     {
-        return view('livewire.article-form');
+        return view('livewire.article-form', [
+            'categories' => Category::pluck('name', 'id')
+        ]);
     }
 }

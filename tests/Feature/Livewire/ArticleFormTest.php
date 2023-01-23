@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Livewire;
 
-use App\Models\Article;
+use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Livewire\Livewire;
+use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ArticleFormTest extends TestCase
 {
@@ -76,6 +77,7 @@ class ArticleFormTest extends TestCase
         $image = UploadedFile::fake()->image('post-image.png');
 
         $user = User::factory()->create();
+        $category = Category::factory()->create();
 
         Livewire::actingAs($user)->test('article-form')
 
@@ -83,6 +85,7 @@ class ArticleFormTest extends TestCase
             ->set('article.title', 'New article')
             ->set('article.slug', 'new-article')
             ->set('article.content', 'Article content')
+            ->set('article.category_id', $category->id)
             ->call('save')
             ->assertSessionHas('status')
             ->assertRedirect(route('articles.index'));
@@ -93,6 +96,7 @@ class ArticleFormTest extends TestCase
             'title' => 'New article',
             'slug' => 'new-article',
             'content' => 'Article content',
+            'category_id' => $category->id,
             'user_id' => $user->id
 
         ]);
@@ -225,6 +229,33 @@ class ArticleFormTest extends TestCase
             ->assertSeeHtml(__('validation.required', ['attribute' => 'slug']));
     }
 
+    /** @test */
+
+    public function category_is_required()
+    {
+        Livewire::test('article-form')
+            ->set('article.title', 'New Article')
+            ->set('article.slug', 'new-article')
+            ->set('article.content', 'Article content')
+            ->set('article.category_id', null)
+            ->call('save')
+            ->assertHasErrors(['article.category_id' => 'required'])
+            ->assertSeeHtml(__('validation.required', ['attribute' => 'category id']));
+    }
+
+    /** @test */
+
+    public function category_must_exist_in_database()
+    {
+        Livewire::test('article-form')
+            ->set('article.title', 'New Article')
+            ->set('article.slug', 'new-article')
+            ->set('article.content', 'Article content')
+            ->set('article.category_id', 1)
+            ->call('save')
+            ->assertHasErrors(['article.category_id' => 'exists'])
+            ->assertSeeHtml(__('validation.exists', ['attribute' => 'category id']));
+    }
 
     /** @test */
 
@@ -240,7 +271,7 @@ class ArticleFormTest extends TestCase
             ->assertHasErrors(['article.slug' => 'unique'])
             ->assertSeeHtml(__('validation.unique', ['attribute' => 'slug']));
     }
-    
+
     /** @test */
     public function slug_must_only_contain_letters_numbers_dashes_and_underscores()
     {
