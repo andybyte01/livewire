@@ -19,6 +19,7 @@ class ArticleForm extends Component
     public $image;
     public $newCategory;
     public $showCategoryModal = false;
+    public $showDeleteModal = false;
 
     public function openCategoryForm()
     {
@@ -30,11 +31,16 @@ class ArticleForm extends Component
     {
         $this->showCategoryModal = false;
         $this->newCategory = null;
+        $this->clearValidation('newCategory.*');
     }
+
 
 
     public function saveNewCategory()
     {
+
+        $this->validateOnly('newCategory.name');
+        $this->validateOnly('newCategory.slug');
         $this->newCategory->save();
         $this->article->category_id = $this->newCategory->id;
         $this->closeCategoryForm();
@@ -51,12 +57,8 @@ class ArticleForm extends Component
                     'image',
                     'max:2048'
                 ])
-
-
-
             ],
             'article.title' => ['required', 'min:4'],
-
             'article.slug' => [
                 'required',
                 'alpha_dash',
@@ -67,8 +69,14 @@ class ArticleForm extends Component
                 'required',
                 Rule::exists('categories', 'id')
             ],
-            'newCategory.name' => [],
-            'newCategory.slug' => [],
+            'newCategory.name' => [
+                Rule::requiredIf($this->newCategory instanceof Category),
+                Rule::unique('categories', 'name')
+            ],
+            'newCategory.slug' => [
+                Rule::requiredIf($this->newCategory instanceof Category),
+                Rule::unique('categories', 'slug')
+            ],
         ];
     }
 
@@ -125,6 +133,15 @@ class ArticleForm extends Component
         session()->flash('status', __('Article saved.'));
 
         $this->redirectRoute('articles.index');
+    }
+
+
+    public function delete()
+    {
+        Storage::disk('public')->delete($this->article->image);
+        $this->article->delete();
+        session()->flash('status', __('Article deleted.'));
+        $this->redirect(route('articles.index'));
     }
 
     public function render()

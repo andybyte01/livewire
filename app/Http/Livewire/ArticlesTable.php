@@ -4,15 +4,15 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 
-class Articles extends Component
+class ArticlesTable extends Component
 {
     public $search = '';
 
     public function render()
     {
-        return view('livewire.articles', [
+        return view('livewire.articles-table', [
             'articles' => \App\Models\Article::where('title', 'like', "%{$this->search}%")->latest()->get()
 
-        ])->layout('layouts.guest');
+        ]);
     }
 }

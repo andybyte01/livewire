@@ -43,12 +43,12 @@ class ArticleFormTest extends TestCase
     }
 
     /** @test */
-    public function article_form_render_properly()
+    public function article_form_renders_properly()
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('articles.create'))
-            ->assertSeeLivewire('article-form');
+            ->assertSeeLivewire('article-form')->assertDontSeeText(__('Delete'));
 
         $article = Article::factory()->create();
 
@@ -117,6 +117,8 @@ class ArticleFormTest extends TestCase
             ->assertSet('article.title', $article->title)
             ->assertSet('article.slug', $article->slug)
             ->assertSet('article.content', $article->content)
+            ->assertSet('article.category_id', $article->category->id)
+
             ->set('article.title', 'Updated title')
             ->set('article.slug', 'updated-slug')
             ->call('save')
@@ -161,6 +163,32 @@ class ArticleFormTest extends TestCase
             ->assertMissing($oldImagePath);
     }
 
+
+
+    /** @test */
+
+    public function can_delete_articles()
+    {
+        Storage::fake();
+        $imagePath = UploadedFile::fake()
+            ->image('image.png')
+            ->store('/', 'public');
+
+        $article = Article::factory()->create([
+            'image' => $imagePath
+        ]);
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)->test('article-form', ['article' => $article])
+            ->call('delete')
+            ->assertSessionHas('status')
+            ->assertRedirect(route('articles.index'));
+
+        Storage::disk('public')->assertMissing($imagePath);
+
+        $this->assertDatabaseCount('articles', 0);
+    }
 
     /** @test */
 
@@ -255,6 +283,79 @@ class ArticleFormTest extends TestCase
             ->call('save')
             ->assertHasErrors(['article.category_id' => 'exists'])
             ->assertSeeHtml(__('validation.exists', ['attribute' => 'category id']));
+    }
+
+
+    /** @test */
+
+    function can_create_new_category()
+    {
+        Livewire::test('article-form')
+            ->call('openCategoryForm')
+            ->set('newCategory.name', 'Laravel')
+            ->assertSet('newCategory.slug', 'laravel')
+            ->call('saveNewCategory')
+            ->assertSet('article.category_id', Category::first()->id)
+            ->assertSet('showCategoryModal', false);
+
+        $this->assertDatabaseCount('categories', 1);
+    }
+    /** @test */
+
+    function new_category_name_is_required()
+    {
+        Livewire::test('article-form')
+            ->call('openCategoryForm')
+            ->set('newCategory.slug', 'laravel')
+            ->call('saveNewCategory')
+            ->assertHasErrors(['newCategory.name' => 'required'])
+            ->assertSeeHtml(__('validation.required', ['attribute' => 'name']));
+    }
+
+
+    /** @test */
+
+    function new_category_name_must_be_unique()
+    {
+
+        $category = Category::factory()->create();
+
+        Livewire::test('article-form')
+            ->call('openCategoryForm')
+            ->set('newCategory.name', 'Laravel')
+            ->set('newCategory.slug', $category->slug)
+            ->call('saveNewCategory')
+            ->assertHasErrors(['newCategory.slug' => 'unique'])
+            ->assertSeeHtml(__('validation.unique', ['attribute' => 'slug']));
+    }
+
+    /** @test */
+
+    function new_category_slug_must_be_unique()
+    {
+
+        $category = Category::factory()->create();
+
+        Livewire::test('article-form')
+            ->call('openCategoryForm')
+            ->set('newCategory.name', $category->name)
+            ->set('newCategory.slug', 'laravel')
+            ->call('saveNewCategory')
+            ->assertHasErrors(['newCategory.name' => 'unique'])
+            ->assertSeeHtml(__('validation.unique', ['attribute' => 'name']));
+    }
+
+
+    /** @test */
+    function new_category_slug_is_required()
+    {
+        Livewire::test('article-form')
+            ->call('openCategoryForm')
+            ->set('newCategory.name', 'Laravel')
+            ->set('newCategory.slug', null)
+            ->call('saveNewCategory')
+            ->assertHasErrors(['newCategory.slug' => 'required'])
+            ->assertSeeHtml(__('validation.required', ['attribute' => 'slug']));
     }
 
     /** @test */

@@ -56,6 +56,10 @@
                         <x-jet-input-error for="article.content" class="mt-2" />
                     </div>
                     <x-slot name="actions">
+                        @if ($this->article->exists)
+                            <x-jet-danger-button wire:click="$set('showDeleteModal', true)" class="mr-auto">
+                                {{ __('Delete') }}</x-jet-danger-button>
+                        @endif
                         <x-jet-button>
                             {{ __('Save') }}
                         </x-jet-button>
@@ -64,8 +68,18 @@
             </x-jet-form-section>
         </div>
     </div>
+    @if ($this->article->exists)
+        <x-jet-confirmation-modal wire:model="showDeleteModal">
+            <x-slot name="title"></x-slot>
+            <x-slot name="content">Do you want to delete the article: {{ $this->article->title }}</x-slot>
+            <x-slot name="footer">
+                <x-jet-button wire:click="$set('showDeleteModal', false)">{{ __('Cancel') }}</x-jet-button>
+                <x-jet-danger-button wire:click="delete">{{ __('Confirm') }}</x-jet-danger-button>
+            </x-slot>
+        </x-jet-confirmation-modal>
+    @endif
     <x-jet-modal wire:model="showCategoryModal">
-        <form wire:submit.prevent="saveNewCategory" >
+        <form wire:submit.prevent="saveNewCategory">
             <div class="px-6 py-4">
                 <div class="text-lg">
                     {{ __('New Category') }}
@@ -87,8 +101,11 @@
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-100 text-right">
+            <div class="px-6 py-4 bg-gray-100 text-right space-x-2">
+
                 <x-jet-secondary-button wire:click="closeCategoryForm">Cancel</x-jet-secondary-button>
+                <x-jet-button>{{ __('Submit') }}</x-jet-button>
+
             </div>
 
         </form>
